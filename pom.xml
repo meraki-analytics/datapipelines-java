@@ -4,7 +4,7 @@
 
 	<groupId>com.merakianalytics.datapipelines</groupId>
 	<artifactId>datapipelines</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.0</version>
 
 	<name>datapipelines</name>
 	<description>Caching abstraction layer for orchestrating multiple cache tiers</description>
@@ -71,6 +71,8 @@
 
 			<properties>
 				<profile.classifier>android</profile.classifier>
+				<maven.javadoc.classifier>${profile.classifier}-javadoc</maven.javadoc.classifier>
+				<maven.source.classifier>${profile.classifier}-sources</maven.source.classifier>
 			</properties>
 
 			<build>
