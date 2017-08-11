@@ -51,6 +51,21 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>${jdk.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<compilerArgument>-proc:none</compilerArgument>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<profiles>
 		<profile>
 			<id>java</id>
@@ -61,21 +76,6 @@
 			<properties>
 				<jdk.version>1.8</jdk.version>
 			</properties>
-
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.6.1</version>
-						<configuration>
-							<source>1.7</source>
-							<target>${jdk.version}</target>
-							<encoding>${project.build.sourceEncoding}</encoding>
-							<compilerArgument>-proc:none</compilerArgument>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 		<profile>
 			<id>android</id>
@@ -88,23 +88,14 @@
 			<build>
 				<plugins>
 					<plugin>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.6.1</version>
-						<configuration>
-							<source>1.7</source>
-							<target>${jdk.version}</target>
-							<encoding>${project.build.sourceEncoding}</encoding>
-							<compilerArgument>-proc:none</compilerArgument>
-						</configuration>
-					</plugin>
-					<plugin>
 						<artifactId>maven-jar-plugin</artifactId>
 						<version>3.0.2</version>
 						<executions>
 							<execution>
+								<id>default-jar</id>
 								<phase>package</phase>
 								<goals>
-									<goal>jar</goal>
+									<goal>${project.packaging}</goal>
 								</goals>
 								<configuration>
 									<classifier>${profile.classifier}</classifier>
