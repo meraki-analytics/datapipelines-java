@@ -4,11 +4,21 @@
 
 	<groupId>com.merakianalytics.datapipelines</groupId>
 	<artifactId>datapipelines</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<name>datapipelines</name>
 	<description>Caching abstraction layer for orchestrating multiple cache tiers</description>
 	<url>https://github.com/meraki-analytics/datapipelines-java</url>
+
+	<developers>
+		<developer>
+			<id>robrua</id>
+			<name>Rob Rua</name>
+			<email>robertrua@gmail.com</email>
+			<organization>merakianalytics</organization>
+			<organizationUrl>https://github.com/meraki-analytics</organizationUrl>
+		</developer>
+	</developers>
 
 	<licenses>
 		<license>
@@ -66,37 +76,6 @@
 	</build>
 
 	<profiles>
-		<profile>
-			<id>android</id>
-
-			<properties>
-				<profile.classifier>android</profile.classifier>
-				<maven.javadoc.classifier>${profile.classifier}-javadoc</maven.javadoc.classifier>
-				<maven.source.classifier>${profile.classifier}-sources</maven.source.classifier>
-			</properties>
-
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-jar-plugin</artifactId>
-						<version>3.0.2</version>
-						<executions>
-							<execution>
-								<id>default-jar</id>
-								<phase>package</phase>
-								<goals>
-									<goal>${project.packaging}</goal>
-								</goals>
-								<configuration>
-									<classifier>${profile.classifier}</classifier>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
 		<profile>
 			<id>release</id>
 			<distributionManagement>
