@@ -38,6 +38,11 @@ public class SinkHandler<A, S> {
         public S next() {
             return transform.transform(iterator.next(), context);
         }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
     private final Class<A> acceptedType;
     private final DataSink sink;

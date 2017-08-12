@@ -48,6 +48,11 @@ public class SourceHandler<P, A> {
 
             return transformed;
         }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SourceHandler.class);
