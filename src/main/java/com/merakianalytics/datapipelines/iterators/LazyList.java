@@ -287,7 +287,8 @@ public class LazyList<T> implements List<T>, AutoCloseable {
         if(index == -1) {
             return false;
         }
-        return data.remove(item);
+        data.remove(index);
+        return true;
     }
 
     @Override
