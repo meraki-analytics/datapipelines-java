@@ -44,6 +44,10 @@ public abstract class CloseableIterators {
         };
     }
 
+    public static <T> LazyList<T> toLazyList(final CloseableIterator<T> iterator) {
+        return new LazyList<>(iterator);
+    }
+
     public static <T> List<T> toList(final CloseableIterator<T> iterator) {
         final List<T> list = new ArrayList<>();
         while(iterator.hasNext()) {
