@@ -73,7 +73,7 @@ public class DataPipeline {
             final ChainTransform<?, ?> fromAfter = getBestTransform(after, sink.accepts());
 
             if(fromBefore != null && fromAfter != null) {
-                if(fromBefore.cost() <= fromAfter.cost() + transform.cost()) {
+                if(fromBefore.cost() < fromAfter.cost()) {
                     beforeTransform.add(new SinkHandler(sink, fromBefore, fromBefore.from(), fromBefore.to()));
                 } else {
                     afterTransform.add(new SinkHandler(sink, fromAfter, fromAfter.from(), fromAfter.to()));
