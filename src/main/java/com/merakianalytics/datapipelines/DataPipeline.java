@@ -1,5 +1,6 @@
 package com.merakianalytics.datapipelines;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,6 +64,30 @@ public class DataPipeline {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // Can't get specific generic types for new SinkHandler
+    private Entry<Set<SinkHandler<?, ?>>, Set<SinkHandler<?, ?>>> createSinkHandlers(final Class<?> before, final ChainTransform<?, ?> transform,
+        final Class<?> after, final Set<DataSink> targets) {
+        final Set<SinkHandler<?, ?>> beforeTransform = new HashSet<>();
+        final Set<SinkHandler<?, ?>> afterTransform = new HashSet<>();
+        for(final DataSink sink : targets) {
+            final ChainTransform<?, ?> fromBefore = getBestTransform(before, sink.accepts());
+            final ChainTransform<?, ?> fromAfter = getBestTransform(after, sink.accepts());
+
+            if(fromBefore != null && fromAfter != null) {
+                if(fromBefore.cost() <= fromAfter.cost() + transform.cost()) {
+                    beforeTransform.add(new SinkHandler(sink, fromBefore, fromBefore.from(), fromBefore.to()));
+                } else {
+                    afterTransform.add(new SinkHandler(sink, fromAfter, fromAfter.from(), fromAfter.to()));
+                }
+            } else if(fromBefore != null) {
+                beforeTransform.add(new SinkHandler(sink, fromBefore, fromBefore.from(), fromBefore.to()));
+            } else if(fromAfter != null) {
+                afterTransform.add(new SinkHandler(sink, fromAfter, fromAfter.from(), fromAfter.to()));
+            }
+        }
+        return new SimpleImmutableEntry<>(beforeTransform, afterTransform);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"}) // Can't get specific generic types for new SinkHandler
     private Set<SinkHandler<?, ?>> createSinkHandlers(final Class<?> type, final Set<DataSink> targets) {
         final Set<SinkHandler<?, ?>> handlers = new HashSet<>();
         for(final DataSink sink : targets) {
@@ -85,8 +111,10 @@ public class DataPipeline {
                 final ChainTransform<?, ?> transform = getBestTransform(source.provides(), type);
 
                 if(transform != null) {
-                    final Set<SinkHandler<?, ?>> preHandlers = createSinkHandlers(transform.from(), sourceTargets.get(source));
-                    final Set<SinkHandler<?, ?>> postHandlers = createSinkHandlers(transform.to(), sourceTargets.get(source));
+                    final Entry<Set<SinkHandler<?, ?>>, Set<SinkHandler<?, ?>>> created =
+                        createSinkHandlers(transform.from(), transform, transform.to(), sourceTargets.get(source));
+                    final Set<SinkHandler<?, ?>> preHandlers = created.getKey();
+                    final Set<SinkHandler<?, ?>> postHandlers = created.getValue();
                     handlers.add(new SourceHandler(source, transform, preHandlers, postHandlers, transform.to(), transform.from()));
                 }
             }
