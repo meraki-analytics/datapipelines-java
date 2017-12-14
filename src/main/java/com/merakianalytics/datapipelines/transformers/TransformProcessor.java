@@ -29,20 +29,20 @@ public class TransformProcessor extends AbstractProcessor {
 
             if(ElementKind.METHOD != element.getKind()) {
                 throw new DataTransformerDefinitionException(
-                                                             "Must use @Transform with methods only! Tried to use with " + element.getSimpleName()
-                                                             + ", which is not a method.");
+                    "Must use @Transform with methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is not a method.");
             }
 
             final Set<Modifier> modifiers = element.getModifiers();
             if(!modifiers.contains(Modifier.PUBLIC)) {
                 throw new DataTransformerDefinitionException(
-                                                             "Must use @Transform with public methods only! Tried to use with " + element.getSimpleName()
-                                                             + ", which is not public.");
+                    "Must use @Transform with public methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is not public.");
             }
             if(modifiers.contains(Modifier.STATIC)) {
                 throw new DataTransformerDefinitionException(
-                                                             "Must use @Transform with non-static methods only! Tried to use with " + element.getSimpleName()
-                                                             + ", which is static.");
+                    "Must use @Transform with non-static methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is static.");
             }
 
             final ExecutableType method = (ExecutableType)element.asType();
@@ -59,13 +59,13 @@ public class TransformProcessor extends AbstractProcessor {
 
             if(!types.isAssignable(method.getReturnType(), toType)) {
                 throw new DataTransformerDefinitionException(
-                                                             "@Transform method return type must be assignable from the annotated \"to\" type! Tried to use with "
-                                                             + element.getSimpleName()
-                                                             + ", which returns " + method.getReturnType() + ".");
+                    "@Transform method return type must be assignable from the annotated \"to\" type! Tried to use with "
+                        + element.getSimpleName()
+                        + ", which returns " + method.getReturnType() + ".");
             }
             if(method.getParameterTypes().size() != 2) {
                 throw new DataTransformerDefinitionException("@Transform methods must take 2 arguments: T item, PipelineContext context. Tried to use with "
-                                                             + element.getSimpleName() + ", which has a different signature.");
+                    + element.getSimpleName() + ", which has a different signature.");
             }
 
             // annotation.from() will throw the exception because it doesn't have compiled class information yet, and is of type Class<?>.
@@ -80,13 +80,13 @@ public class TransformProcessor extends AbstractProcessor {
 
             if(!types.isAssignable(method.getParameterTypes().get(0), fromType)) {
                 throw new DataTransformerDefinitionException(
-                                                             "@Transform method first argument must be assignable from the annotated \"from\" type. Tried to use with "
-                                                             + element.getSimpleName()
-                                                             + ", which takes " + method.getParameterTypes().get(0) + ".");
+                    "@Transform method first argument must be assignable from the annotated \"from\" type. Tried to use with "
+                        + element.getSimpleName()
+                        + ", which takes " + method.getParameterTypes().get(0) + ".");
             }
             if(!types.isAssignable(method.getParameterTypes().get(1), contextType)) {
                 throw new DataTransformerDefinitionException("@Transform method second argument must be assignable from " + contextType + ". Tried to use with "
-                                                             + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(1) + ".");
+                    + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(1) + ".");
             }
         }
 

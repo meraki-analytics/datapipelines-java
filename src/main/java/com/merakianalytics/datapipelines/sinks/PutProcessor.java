@@ -30,20 +30,20 @@ public class PutProcessor extends AbstractProcessor {
 
             if(ElementKind.METHOD != element.getKind()) {
                 throw new DataSinkDefinitionException(
-                                                      "Must use @Put with methods only! Tried to use with " + element.getSimpleName()
-                                                      + ", which is not a method.");
+                    "Must use @Put with methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is not a method.");
             }
 
             final Set<Modifier> modifiers = element.getModifiers();
             if(!modifiers.contains(Modifier.PUBLIC)) {
                 throw new DataSinkDefinitionException(
-                                                      "Must use @Put with public methods only! Tried to use with " + element.getSimpleName()
-                                                      + ", which is not public.");
+                    "Must use @Put with public methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is not public.");
             }
             if(modifiers.contains(Modifier.STATIC)) {
                 throw new DataSinkDefinitionException(
-                                                      "Must use @Put with non-static methods only! Tried to use with " + element.getSimpleName()
-                                                      + ", which is static.");
+                    "Must use @Put with non-static methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is static.");
             }
 
             final ExecutableType method = (ExecutableType)element.asType();
@@ -60,24 +60,24 @@ public class PutProcessor extends AbstractProcessor {
 
             if(TypeKind.VOID != method.getReturnType().getKind()) {
                 throw new DataSinkDefinitionException(
-                                                      "@Put method must have void return! Tried to use with " + element.getSimpleName() + ", which returns "
-                                                      + method.getReturnType() + ".");
+                    "@Put method must have void return! Tried to use with " + element.getSimpleName() + ", which returns "
+                        + method.getReturnType() + ".");
             }
             if(method.getParameterTypes().size() != 2) {
                 throw new DataSinkDefinitionException("@Put methods must take 2 arguments: T item, PipelineContext context. Tried to use with "
-                                                      + element.getSimpleName() + ", which has a different signature.");
+                    + element.getSimpleName() + ", which has a different signature.");
             }
 
             final TypeMirror contextType = elements.getTypeElement(PipelineContext.class.getName()).asType();
 
             if(!types.isAssignable(annotatedType, method.getParameterTypes().get(0))) {
                 throw new DataSinkDefinitionException(
-                                                      "@Put method annotated value type must be assignable from the method's first argument type. Tried to use with "
-                                                      + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(0) + ".");
+                    "@Put method annotated value type must be assignable from the method's first argument type. Tried to use with "
+                        + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(0) + ".");
             }
             if(!types.isAssignable(method.getParameterTypes().get(1), contextType)) {
                 throw new DataSinkDefinitionException("@Put method second argument must be assignable from " + contextType + ". Tried to use with "
-                                                      + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(1) + ".");
+                    + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(1) + ".");
             }
         }
 

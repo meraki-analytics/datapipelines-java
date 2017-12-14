@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import es.usc.citius.hipster.util.Function;
+
 public abstract class CloseableIterators {
     public static <T> CloseableIterator<T> empty() {
         return from(Collections.<T> emptyIterator());
@@ -64,5 +66,51 @@ public abstract class CloseableIterators {
         }
         iterator.close();
         return set;
+    }
+
+    public static <F, T> CloseableIterator<T> transform(final CloseableIterator<F> iterator, final Function<F, T> conversion) {
+        return new CloseableIterator<T>() {
+            @Override
+            public void close() {
+                iterator.close();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                return conversion.apply(iterator.next());
+            }
+
+            @Override
+            public void remove() {
+                iterator.remove();
+            }
+        };
+    }
+
+    public static <F, T> CloseableIterator<T> transform(final Iterator<F> iterator, final Function<F, T> conversion) {
+        return new CloseableIterator<T>() {
+            @Override
+            public void close() {}
+
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                return conversion.apply(iterator.next());
+            }
+
+            @Override
+            public void remove() {
+                iterator.remove();
+            }
+        };
     }
 }

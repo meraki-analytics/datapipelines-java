@@ -32,20 +32,20 @@ public class GetManyProcessor extends AbstractProcessor {
 
             if(ElementKind.METHOD != element.getKind()) {
                 throw new DataSourceDefinitionException(
-                                                        "Must use @GetMany with methods only! Tried to use with " + element.getSimpleName()
-                                                        + ", which is not a method.");
+                    "Must use @GetMany with methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is not a method.");
             }
 
             final Set<Modifier> modifiers = element.getModifiers();
             if(!modifiers.contains(Modifier.PUBLIC)) {
                 throw new DataSourceDefinitionException(
-                                                        "Must use @GetMany with public methods only! Tried to use with " + element.getSimpleName()
-                                                        + ", which is not public.");
+                    "Must use @GetMany with public methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is not public.");
             }
             if(modifiers.contains(Modifier.STATIC)) {
                 throw new DataSourceDefinitionException(
-                                                        "Must use @GetMany with non-static methods only! Tried to use with " + element.getSimpleName()
-                                                        + ", which is static.");
+                    "Must use @GetMany with non-static methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is static.");
             }
 
             final ExecutableType method = (ExecutableType)element.asType();
@@ -65,13 +65,13 @@ public class GetManyProcessor extends AbstractProcessor {
 
             if(!types.isAssignable(method.getReturnType(), returnType)) {
                 throw new DataSourceDefinitionException(
-                                                        "@GetMany methods must return a CloseableIterator over a type which is assignable from the annotation value. Tried to use with "
-                                                        + element.getSimpleName() + ", which returns " + method.getReturnType() + ".");
+                    "@GetMany methods must return a CloseableIterator over a type which is assignable from the annotation value. Tried to use with "
+                        + element.getSimpleName() + ", which returns " + method.getReturnType() + ".");
             }
             if(method.getParameterTypes().size() != 2) {
                 throw new DataSourceDefinitionException(
-                                                        "@GetMany methods must take 2 arguments: Map<String, Object> query, PipelineContext context. Tried to use with "
-                                                        + element.getSimpleName() + ", which has a different signature.");
+                    "@GetMany methods must take 2 arguments: Map<String, Object> query, PipelineContext context. Tried to use with "
+                        + element.getSimpleName() + ", which has a different signature.");
             }
 
             final TypeMirror stringType = elements.getTypeElement(String.class.getName()).asType();
@@ -83,11 +83,11 @@ public class GetManyProcessor extends AbstractProcessor {
 
             if(!types.isAssignable(method.getParameterTypes().get(0), queryType)) {
                 throw new DataSourceDefinitionException("@GetMany method first argument must be assignable from " + queryType + ". Tried to use with "
-                                                        + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(0) + ".");
+                    + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(0) + ".");
             }
             if(!types.isAssignable(method.getParameterTypes().get(1), contextType)) {
                 throw new DataSourceDefinitionException("@GetMany method second argument must be assignable from " + contextType + ". Tried to use with "
-                                                        + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(1) + ".");
+                    + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(1) + ".");
             }
         }
 

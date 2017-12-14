@@ -64,7 +64,7 @@ public class SourceHandler<P, A> {
     private final ChainTransform<A, P> transform;
 
     public SourceHandler(final DataSource source, final ChainTransform<A, P> transform, final Set<SinkHandler<A, ?>> preTransform,
-                         final Set<SinkHandler<P, ?>> postTransform, final Class<P> providedType, final Class<A> acquiredType) {
+        final Set<SinkHandler<P, ?>> postTransform, final Class<P> providedType, final Class<A> acquiredType) {
         this.source = source;
         this.transform = transform;
         this.preTransform = preTransform;

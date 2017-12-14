@@ -31,20 +31,20 @@ public class PutManyProcessor extends AbstractProcessor {
 
             if(ElementKind.METHOD != element.getKind()) {
                 throw new DataSinkDefinitionException(
-                                                      "Must use @PutMany with methods only! Tried to use with " + element.getSimpleName()
-                                                      + ", which is not a method.");
+                    "Must use @PutMany with methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is not a method.");
             }
 
             final Set<Modifier> modifiers = element.getModifiers();
             if(!modifiers.contains(Modifier.PUBLIC)) {
                 throw new DataSinkDefinitionException(
-                                                      "Must use @PutMany with public methods only! Tried to use with " + element.getSimpleName()
-                                                      + ", which is not public.");
+                    "Must use @PutMany with public methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is not public.");
             }
             if(modifiers.contains(Modifier.STATIC)) {
                 throw new DataSinkDefinitionException(
-                                                      "Must use @PutMany with non-static methods only! Tried to use with " + element.getSimpleName()
-                                                      + ", which is static.");
+                    "Must use @PutMany with non-static methods only! Tried to use with " + element.getSimpleName()
+                        + ", which is static.");
             }
 
             final ExecutableType method = (ExecutableType)element.asType();
@@ -61,11 +61,11 @@ public class PutManyProcessor extends AbstractProcessor {
 
             if(TypeKind.VOID != method.getReturnType().getKind()) {
                 throw new DataSinkDefinitionException("@PutMany method must have void return! Tried to use with " + element.getSimpleName() + ", which returns "
-                                                      + method.getReturnType() + ".");
+                    + method.getReturnType() + ".");
             }
             if(method.getParameterTypes().size() != 2) {
                 throw new DataSinkDefinitionException("@PutMany methods must take 2 arguments: Iterable<T> items, PipelineContext context. Tried to use with "
-                                                      + element.getSimpleName() + ", which has a different signature.");
+                    + element.getSimpleName() + ", which has a different signature.");
             }
 
             final TypeElement iterableType = elements.getTypeElement(Iterable.class.getName());
@@ -75,12 +75,12 @@ public class PutManyProcessor extends AbstractProcessor {
 
             if(!types.isAssignable(itemsType, method.getParameterTypes().get(0))) {
                 throw new DataSinkDefinitionException(
-                                                      "@PutMany method annotated value must be assignable from the generic type of the method's first argument . Tried to use with "
-                                                      + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(0) + ".");
+                    "@PutMany method annotated value must be assignable from the generic type of the method's first argument . Tried to use with "
+                        + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(0) + ".");
             }
             if(!types.isAssignable(method.getParameterTypes().get(1), contextType)) {
                 throw new DataSinkDefinitionException("@PutMany method second argument must be assignable from " + contextType + ". Tried to use with "
-                                                      + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(1) + ".");
+                    + element.getSimpleName() + ", which takes " + method.getParameterTypes().get(1) + ".");
             }
         }
 
