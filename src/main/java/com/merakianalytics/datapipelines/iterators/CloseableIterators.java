@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import es.usc.citius.hipster.util.Function;
+import com.google.common.base.Function;
 
 public abstract class CloseableIterators {
     public static <T> CloseableIterator<T> empty() {
@@ -68,49 +68,50 @@ public abstract class CloseableIterators {
         return set;
     }
 
-    public static <F, T> CloseableIterator<T> transform(final CloseableIterator<F> iterator, final Function<F, T> conversion) {
-        return new CloseableIterator<T>() {
-            @Override
-            public void close() {
-                iterator.close();
-            }
-
-            @Override
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
-
-            @Override
-            public T next() {
-                return conversion.apply(iterator.next());
-            }
-
-            @Override
-            public void remove() {
-                iterator.remove();
-            }
-        };
-    }
-
     public static <F, T> CloseableIterator<T> transform(final Iterator<F> iterator, final Function<F, T> conversion) {
-        return new CloseableIterator<T>() {
-            @Override
-            public void close() {}
+        if(iterator instanceof CloseableIterator) {
+            final CloseableIterator<F> iter = (CloseableIterator<F>)iterator;
+            return new CloseableIterator<T>() {
+                @Override
+                public void close() {
+                    iter.close();
+                }
 
-            @Override
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
+                @Override
+                public boolean hasNext() {
+                    return iter.hasNext();
+                }
 
-            @Override
-            public T next() {
-                return conversion.apply(iterator.next());
-            }
+                @Override
+                public T next() {
+                    return null;
+                }
 
-            @Override
-            public void remove() {
-                iterator.remove();
-            }
-        };
+                @Override
+                public void remove() {
+                    iter.remove();
+                }
+            };
+        } else {
+            return new CloseableIterator<T>() {
+                @Override
+                public void close() {}
+
+                @Override
+                public boolean hasNext() {
+                    return iterator.hasNext();
+                }
+
+                @Override
+                public T next() {
+                    return null;
+                }
+
+                @Override
+                public void remove() {
+                    iterator.remove();
+                }
+            };
+        }
     }
 }
