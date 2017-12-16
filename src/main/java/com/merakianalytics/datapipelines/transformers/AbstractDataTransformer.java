@@ -59,8 +59,11 @@ public class AbstractDataTransformer implements DataTransformer {
         try {
             return (T)transformMethods().get(fromType).get(toType).invoke(this, item, context);
         } catch(final InvocationTargetException e) {
-            LOGGER.error("Failed to invoke transform method from " + fromType.getCanonicalName() + " to " + toType.getCanonicalName() + ".", e);
-            throw new RuntimeException(e.getCause());
+            if(e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)e.getCause();
+            } else {
+                throw new RuntimeException(e.getCause());
+            }
         } catch(IllegalAccessException | IllegalArgumentException e) {
             LOGGER.error("Failed to invoke transform method from " + fromType.getCanonicalName() + " to " + toType.getCanonicalName() + ".", e);
             throw new RuntimeException(e);

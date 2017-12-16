@@ -37,8 +37,11 @@ public abstract class AbstractDataSource implements DataSource {
 
             return (T)method.invoke(this, query, context);
         } catch(final InvocationTargetException e) {
-            LOGGER.error("Failed to invoke get method for " + type.getCanonicalName() + ".", e);
-            throw new RuntimeException(e.getCause());
+            if(e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)e.getCause();
+            } else {
+                throw new RuntimeException(e.getCause());
+            }
         } catch(IllegalAccessException | IllegalArgumentException e) {
             LOGGER.error("Failed to invoke get method for " + type.getCanonicalName() + ".", e);
             throw new RuntimeException(e);
@@ -57,8 +60,11 @@ public abstract class AbstractDataSource implements DataSource {
 
             return (CloseableIterator<T>)method.invoke(this, query, context);
         } catch(final InvocationTargetException e) {
-            LOGGER.error("Failed to invoke getMany method for " + type.getCanonicalName() + ".", e);
-            throw new RuntimeException(e.getCause());
+            if(e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)e.getCause();
+            } else {
+                throw new RuntimeException(e.getCause());
+            }
         } catch(IllegalAccessException | IllegalArgumentException e) {
             LOGGER.error("Failed to invoke getMany method for " + type.getCanonicalName() + ".", e);
             throw new RuntimeException(e);

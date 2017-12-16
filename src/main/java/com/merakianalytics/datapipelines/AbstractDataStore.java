@@ -50,8 +50,11 @@ public abstract class AbstractDataStore implements DataStore {
 
             return (T)method.invoke(this, query, context);
         } catch(final InvocationTargetException e) {
-            LOGGER.error("Failed to invoke get method for " + type.getCanonicalName() + ".", e);
-            throw new RuntimeException(e.getCause());
+            if(e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)e.getCause();
+            } else {
+                throw new RuntimeException(e.getCause());
+            }
         } catch(IllegalAccessException | IllegalArgumentException e) {
             LOGGER.error("Failed to invoke get method for " + type.getCanonicalName() + ".", e);
             throw new RuntimeException(e);
@@ -70,8 +73,11 @@ public abstract class AbstractDataStore implements DataStore {
 
             return (CloseableIterator<T>)method.invoke(this, query, context);
         } catch(final InvocationTargetException e) {
-            LOGGER.error("Failed to invoke getMany method for " + type.getCanonicalName() + ".", e);
-            throw new RuntimeException(e.getCause());
+            if(e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)e.getCause();
+            } else {
+                throw new RuntimeException(e.getCause());
+            }
         } catch(IllegalAccessException | IllegalArgumentException e) {
             LOGGER.error("Failed to invoke getMany method for " + type.getCanonicalName() + ".", e);
             throw new RuntimeException(e);
@@ -163,8 +169,11 @@ public abstract class AbstractDataStore implements DataStore {
         try {
             putMethods().get(type).invoke(this, item, context);
         } catch(final InvocationTargetException e) {
-            LOGGER.error("Failed to invoke put method for " + type.getCanonicalName() + ".", e);
-            throw new RuntimeException(e.getCause());
+            if(e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)e.getCause();
+            } else {
+                throw new RuntimeException(e.getCause());
+            }
         } catch(IllegalAccessException | IllegalArgumentException e) {
             LOGGER.error("Failed to invoke put method for " + type.getCanonicalName() + ".", e);
             throw new RuntimeException(e);
@@ -176,8 +185,11 @@ public abstract class AbstractDataStore implements DataStore {
         try {
             putManyMethods().get(type).invoke(this, items, context);
         } catch(final InvocationTargetException e) {
-            LOGGER.error("Failed to invoke putMany method for " + type.getCanonicalName() + ".", e);
-            throw new RuntimeException(e.getCause());
+            if(e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)e.getCause();
+            } else {
+                throw new RuntimeException(e.getCause());
+            }
         } catch(IllegalAccessException | IllegalArgumentException e) {
             LOGGER.error("Failed to invoke putMany method for " + type.getCanonicalName() + ".", e);
             throw new RuntimeException(e);
