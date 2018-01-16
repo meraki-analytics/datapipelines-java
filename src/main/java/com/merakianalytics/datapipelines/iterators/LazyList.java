@@ -312,6 +312,7 @@ public class LazyList<T> implements List<T>, AutoCloseable {
 
     @Override
     public int size() {
+        load();
         return data.size();
     }
 
