@@ -263,11 +263,12 @@ public class LazyList<T> implements List<T>, AutoCloseable {
         if(!closed && toIndex > data.size() - 1) {
             synchronized(dataSource) {
                 if(!closed) {
-                    while(dataSource.hasNext() && toIndex > data.size() - 1) {
+                    while(toIndex > data.size() - 1 && dataSource.hasNext()) {
                         data.add(dataSource.next());
                     }
 
-                    if(!dataSource.hasNext()) {
+                    // In this case we exited because hasNext was false. We use this check instead to avoid any side effects of calling hasNext again.
+                    if(toIndex > data.size() - 1) {
                         close();
                     }
                 }
