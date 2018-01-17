@@ -5,7 +5,7 @@ import java.util.Iterator;
 import com.merakianalytics.datapipelines.sinks.DataSink;
 
 public class SinkHandler<A, S> {
-    public class TransformingIterable implements Iterable<S> {
+    private class TransformingIterable implements Iterable<S> {
         private final PipelineContext context;
         private final Iterable<A> iterable;
 
@@ -20,7 +20,7 @@ public class SinkHandler<A, S> {
         }
     }
 
-    public class TransformingIterator implements Iterator<S> {
+    private class TransformingIterator implements Iterator<S> {
         private final PipelineContext context;
         private final Iterator<A> iterator;
 

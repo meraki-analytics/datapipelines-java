@@ -13,7 +13,7 @@ import com.merakianalytics.datapipelines.iterators.CloseableIterators;
 import com.merakianalytics.datapipelines.sources.DataSource;
 
 public class SourceHandler<P, A> {
-    public class TransformingIterator implements CloseableIterator<P> {
+    private class TransformingIterator implements CloseableIterator<P> {
         private final PipelineContext context;
         private final CloseableIterator<A> iterator;
 

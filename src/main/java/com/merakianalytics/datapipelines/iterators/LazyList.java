@@ -8,7 +8,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public class LazyList<T> implements List<T>, AutoCloseable {
-    public class LazyListIterator implements ListIterator<T> {
+    private class LazyListIterator implements ListIterator<T> {
         private int index;
 
         public LazyListIterator() {
