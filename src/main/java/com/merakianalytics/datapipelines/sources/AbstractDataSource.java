@@ -19,10 +19,8 @@ import com.merakianalytics.datapipelines.iterators.CloseableIterators;
 
 public abstract class AbstractDataSource implements DataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataSource.class);
-
     private Map<Class<?>, Method> getManyMethods;
     private Map<Class<?>, Method> getMethods;
-
     private final Object initLock = new Object();
 
     @Override
@@ -97,6 +95,10 @@ public abstract class AbstractDataSource implements DataSource {
         return getMethods;
     }
 
+    protected Set<Class<?>> ignore() {
+        return Collections.emptySet();
+    }
+
     private void initialize() {
         synchronized(initLock) {
             if(getMethods != null && getManyMethods != null) {
@@ -104,6 +106,7 @@ public abstract class AbstractDataSource implements DataSource {
             }
 
             final Class<? extends AbstractDataSource> clazz = this.getClass();
+            final Set<Class<?>> ignore = ignore();
 
             getMethods = new HashMap<>();
             getManyMethods = new HashMap<>();
@@ -111,12 +114,16 @@ public abstract class AbstractDataSource implements DataSource {
             for(final Method method : clazz.getMethods()) {
                 if(method.isAnnotationPresent(Get.class)) {
                     final Get annotation = method.getAnnotation(Get.class);
-                    getMethods.put(annotation.value(), method);
+                    if(!ignore.contains(annotation.value())) {
+                        getMethods.put(annotation.value(), method);
+                    }
                 }
 
                 if(method.isAnnotationPresent(GetMany.class)) {
                     final GetMany annotation = method.getAnnotation(GetMany.class);
-                    getManyMethods.put(annotation.value(), method);
+                    if(!ignore.contains(annotation.value())) {
+                        getManyMethods.put(annotation.value(), method);
+                    }
                 }
             }
 

@@ -15,9 +15,7 @@ import com.merakianalytics.datapipelines.PipelineContext;
 
 public abstract class AbstractDataSink implements DataSink {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataSink.class);
-
     private final Object initLock = new Object();
-
     private Map<Class<?>, Method> putManyMethods;
     private Map<Class<?>, Method> putMethods;
 
@@ -29,6 +27,10 @@ public abstract class AbstractDataSink implements DataSink {
         return Collections.unmodifiableSet(provides);
     }
 
+    protected Set<Class<?>> ignore() {
+        return Collections.emptySet();
+    }
+
     private void initialize() {
         synchronized(initLock) {
             if(putMethods != null && putManyMethods != null) {
@@ -36,6 +38,7 @@ public abstract class AbstractDataSink implements DataSink {
             }
 
             final Class<? extends AbstractDataSink> clazz = this.getClass();
+            final Set<Class<?>> ignore = ignore();
 
             putMethods = new HashMap<>();
             putManyMethods = new HashMap<>();
@@ -43,12 +46,16 @@ public abstract class AbstractDataSink implements DataSink {
             for(final Method method : clazz.getMethods()) {
                 if(method.isAnnotationPresent(Put.class)) {
                     final Put annotation = method.getAnnotation(Put.class);
-                    putMethods.put(annotation.value(), method);
+                    if(!ignore.contains(annotation.annotationType())) {
+                        putMethods.put(annotation.value(), method);
+                    }
                 }
 
                 if(method.isAnnotationPresent(PutMany.class)) {
                     final PutMany annotation = method.getAnnotation(PutMany.class);
-                    putManyMethods.put(annotation.value(), method);
+                    if(!ignore.contains(annotation.annotationType())) {
+                        putManyMethods.put(annotation.value(), method);
+                    }
                 }
             }
 

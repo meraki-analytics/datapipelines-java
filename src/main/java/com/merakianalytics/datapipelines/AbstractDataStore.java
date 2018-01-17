@@ -21,12 +21,9 @@ import com.merakianalytics.datapipelines.sources.GetMany;
 
 public abstract class AbstractDataStore implements DataStore {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataStore.class);
-
     private Map<Class<?>, Method> getManyMethods;
     private Map<Class<?>, Method> getMethods;
-
     private final Object initLock = new Object();
-
     private Map<Class<?>, Method> putManyMethods;
     private Map<Class<?>, Method> putMethods;
 
@@ -112,6 +109,10 @@ public abstract class AbstractDataStore implements DataStore {
         return getMethods;
     }
 
+    protected Set<Class<?>> ignore() {
+        return Collections.emptySet();
+    }
+
     private void initialize() {
         synchronized(initLock) {
             if(getMethods != null && getManyMethods != null && putMethods != null && putManyMethods != null) {
@@ -119,6 +120,7 @@ public abstract class AbstractDataStore implements DataStore {
             }
 
             final Class<? extends AbstractDataStore> clazz = this.getClass();
+            final Set<Class<?>> ignore = ignore();
 
             getMethods = new HashMap<>();
             getManyMethods = new HashMap<>();
@@ -129,22 +131,30 @@ public abstract class AbstractDataStore implements DataStore {
             for(final Method method : clazz.getMethods()) {
                 if(method.isAnnotationPresent(Get.class)) {
                     final Get annotation = method.getAnnotation(Get.class);
-                    getMethods.put(annotation.value(), method);
+                    if(!ignore.contains(annotation.value())) {
+                        getMethods.put(annotation.value(), method);
+                    }
                 }
 
                 if(method.isAnnotationPresent(GetMany.class)) {
                     final GetMany annotation = method.getAnnotation(GetMany.class);
-                    getManyMethods.put(annotation.value(), method);
+                    if(!ignore.contains(annotation.value())) {
+                        getManyMethods.put(annotation.value(), method);
+                    }
                 }
 
                 if(method.isAnnotationPresent(Put.class)) {
                     final Put annotation = method.getAnnotation(Put.class);
-                    putMethods.put(annotation.value(), method);
+                    if(!ignore.contains(annotation.value())) {
+                        putMethods.put(annotation.value(), method);
+                    }
                 }
 
                 if(method.isAnnotationPresent(PutMany.class)) {
                     final PutMany annotation = method.getAnnotation(PutMany.class);
-                    putManyMethods.put(annotation.value(), method);
+                    if(!ignore.contains(annotation.value())) {
+                        putManyMethods.put(annotation.value(), method);
+                    }
                 }
             }
 
