@@ -18,13 +18,22 @@ import es.usc.citius.hipster.model.problem.SearchProblem;
 import es.usc.citius.hipster.util.Function;
 
 /**
- * It's just like... why would you call a library Hipster4j?
+ * Models the available types in a {@link com.merakianalytics.datapipelines.DataPipeline} as a graph with directed edges between types that have a
+ * {@link com.merakianalytics.datapipelines.transformers.DataTransformer} which supports that conversion.
+ * Used to determine how best to transform from a type to another by finding the shortest path.
+ *
+ * @see com.merakianalytics.datapipelines.transformers.DataTransformer
+ * @see com.merakianalytics.datapipelines.DataPipeline
  */
 @SuppressWarnings("rawtypes") // Class<?> doesn't play well with well-specified class types on inference
 public class TypeGraph {
     private final Map<Class<?>, Map<Class<?>, DataTransformer>> cheapest;
     private final HipsterDirectedGraph<Class, DataTransformer> graph;
 
+    /**
+     * @param transformers
+     *        the {@link com.merakianalytics.datapipelines.transformers.DataTransformer}s available
+     */
     public TypeGraph(final Collection<? extends DataTransformer> transformers) {
         // Get cheapest transform for each type transition
         final Map<Class<?>, Map<Class<?>, DataTransformer>> cheapestTransformer = new HashMap<>();
@@ -62,6 +71,15 @@ public class TypeGraph {
         graph = builder.createDirectedGraph();
     }
 
+    /**
+     * Attempts to find the best {@link com.merakianalytics.datapipelines.ChainTransform} to get from a type to another
+     *
+     * @param from
+     *        the type to convert from
+     * @param to
+     *        the type to convert to
+     * @return the best {@link com.merakianalytics.datapipelines.ChainTransform} between the types, or null if there is none
+     */
     @SuppressWarnings("unchecked") // Generics are not the strong suit of Hipster4j.
     public ChainTransform getTransform(final Class from, final Class<?> to) {
         if(from.equals(to)) {

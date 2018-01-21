@@ -14,11 +14,30 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.merakianalytics.datapipelines.iterators.CloseableIterator;
-import com.merakianalytics.datapipelines.iterators.CloseableIterators;
 import com.merakianalytics.datapipelines.sinks.DataSink;
 import com.merakianalytics.datapipelines.sources.DataSource;
 import com.merakianalytics.datapipelines.transformers.DataTransformer;
 
+/**
+ * A DataPipeline is an ordered list of {@link com.merakianalytics.datapipelines.PipelineElement}s:
+ * {@link com.merakianalytics.datapipelines.sources.DataSource}s, {@link com.merakianalytics.datapipelines.sinks.DataSink}s, and
+ * {@link com.merakianalytics.datapipelines.DataStore}s.
+ *
+ * It also contains {@link com.merakianalytics.datapipelines.transformers.DataTransformer}s, which convert the inputs and outputs of the
+ * {@link com.merakianalytics.datapipelines.PipelineElement} to multiply the usefulness of the {@link com.merakianalytics.datapipelines.DataPipeline}.
+ *
+ * When data is requested from the {@link com.merakianalytics.datapipelines.DataPipeline}, it checks each
+ * {@link com.merakianalytics.datapipelines.sources.DataSource} which provides the requested type in order, moving on to the next if null is provided.
+ *
+ * If a {@link com.merakianalytics.datapipelines.sources.DataSource} provides data, the data is provided to each
+ * {@link com.merakianalytics.datapipelines.sinks.DataSink} that came before the providing {@link com.merakianalytics.datapipelines.sources.DataSource}, then
+ * returned to the user.
+ *
+ * @see com.merakianalytics.datapipelines.sources.DataSource
+ * @see com.merakianalytics.datapipelines.sinks.DataSink
+ * @see com.merakianalytics.datapipelines.DataStore
+ * @see com.merakianalytics.datapipelines.transformers.DataTransformer
+ */
 public class DataPipeline {
     private final Map<Class<?>, Object> sinkHandlerLocks;
     private final Map<Class<?>, Set<SinkHandler<?, ?>>> sinkHandlers;
@@ -29,6 +48,13 @@ public class DataPipeline {
     private final Map<DataSource, Set<DataSink>> sourceTargets;
     private final TypeGraph typeGraph;
 
+    /**
+     * @param transformers
+     *        the {@link com.merakianalytics.datapipelines.transformers.DataTransformer}s to use in the {@link com.merakianalytics.datapipelines.DataPipeline}
+     * @param elements
+     *        the {@link com.merakianalytics.datapipelines.sources.DataSource}s, {@link com.merakianalytics.datapipelines.sinks.DataSink}s, and
+     *        {@link com.merakianalytics.datapipelines.DataStore}s to use in the {@link com.merakianalytics.datapipelines.DataPipeline}
+     */
     public DataPipeline(final Collection<? extends DataTransformer> transformers, final List<? extends PipelineElement> elements) {
         typeGraph = new TypeGraph(transformers);
 
@@ -55,10 +81,22 @@ public class DataPipeline {
         sinkHandlerLocks = new ConcurrentHashMap<>();
     }
 
+    /**
+     * @param transformers
+     *        the {@link com.merakianalytics.datapipelines.transformers.DataTransformer}s to use in the {@link com.merakianalytics.datapipelines.DataPipeline}
+     * @param elements
+     *        the {@link com.merakianalytics.datapipelines.sources.DataSource}s, {@link com.merakianalytics.datapipelines.sinks.DataSink}s, and
+     *        {@link com.merakianalytics.datapipelines.DataStore}s to use in the {@link com.merakianalytics.datapipelines.DataPipeline}
+     */
     public DataPipeline(final Collection<? extends DataTransformer> transformers, final PipelineElement... elements) {
         this(transformers, Arrays.asList(elements));
     }
 
+    /**
+     * @param elements
+     *        the {@link com.merakianalytics.datapipelines.sources.DataSource}s, {@link com.merakianalytics.datapipelines.sinks.DataSink}s, and
+     *        {@link com.merakianalytics.datapipelines.DataStore}s to use in the {@link com.merakianalytics.datapipelines.DataPipeline}
+     */
     public DataPipeline(final PipelineElement... elements) {
         this(new LinkedList<DataTransformer>(), Arrays.asList(elements));
     }
@@ -122,6 +160,17 @@ public class DataPipeline {
         return Collections.unmodifiableList(handlers);
     }
 
+    /**
+     * Gets some data from the {@link com.merakianalytics.datapipelines.DataPipeline}
+     *
+     * @param <T>
+     *        the type of the data that should be retrieved
+     * @param type
+     *        the type of the data that should be retrieved
+     * @param query
+     *        a query specifying the details of what data should fulfill this request
+     * @return an object of the request type if the query had a result, or null
+     */
     @SuppressWarnings("unchecked") // Pipeline ensures the proper type will be returned from get
     public <T> T get(final Class<T> type, final Map<String, Object> query) {
         final List<SourceHandler<?, ?>> handlers = getSourceHandlers(type);
@@ -167,10 +216,36 @@ public class DataPipeline {
         return best;
     }
 
+    /**
+     * Gets multiple data elements from the {@link com.merakianalytics.datapipelines.DataPipeline}
+     *
+     * @param <T>
+     *        the type of the data that should be retrieved
+     * @param type
+     *        the type of the data that should be retrieved
+     * @param query
+     *        a query specifying the details of what data should fulfill this request
+     * @return a {@link com.merakianalytics.datapipelines.iterators.CloseableIterator} of the request type if the query had a result, or null
+     */
     public <T> CloseableIterator<T> getMany(final Class<T> type, final Map<String, Object> query) {
         return getMany(type, query, false);
     }
 
+    /**
+     * Gets multiple data elements from the {@link com.merakianalytics.datapipelines.DataPipeline}
+     *
+     * @param <T>
+     *        the type of the data that should be retrieved
+     * @param type
+     *        the type of the data that should be retrieved
+     * @param query
+     *        a query specifying the details of what data should fulfill this request
+     * @param streaming
+     *        whether to stream the results. If streaming is enabled, results from the {@link com.merakianalytics.datapipelines.sources.DataSource} will be
+     *        converted and provided to the {@link com.merakianalytics.datapipelines.sinks.DataSink}s one-by-one as they are requested from the
+     *        {@link com.merakianalytics.datapipelines.iterators.CloseableIterator} instead of converting and storing them all at once.
+     * @return a {@link com.merakianalytics.datapipelines.iterators.CloseableIterator} of the request type if the query had a result, or null
+     */
     @SuppressWarnings("unchecked") // Pipeline ensures the proper type will be returned from getMany
     public <T> CloseableIterator<T> getMany(final Class<T> type, final Map<String, Object> query, final boolean streaming) {
         final List<SourceHandler<?, ?>> handlers = getSourceHandlers(type);
@@ -188,14 +263,6 @@ public class DataPipeline {
             }
         }
         return null;
-    }
-
-    public <T> List<T> getManyAsList(final Class<T> type, final Map<String, Object> query) {
-        return CloseableIterators.toList(getMany(type, query, false));
-    }
-
-    public <T> Set<T> getManyAsSet(final Class<T> type, final Map<String, Object> query) {
-        return CloseableIterators.toSet(getMany(type, query, false));
     }
 
     private Set<SinkHandler<?, ?>> getSinkHandlers(final Class<?> type) {
@@ -256,6 +323,16 @@ public class DataPipeline {
         return context;
     }
 
+    /**
+     * Puts some data into all accepting {@link com.merakianalytics.datapipelines.sinks.DataSink}s in the {@link com.merakianalytics.datapipelines.DataPipeline}
+     *
+     * @param <T>
+     *        the type of the data that should be stored
+     * @param type
+     *        the type of the data that should be stored
+     * @param item
+     *        the data to be stored
+     */
     @SuppressWarnings("unchecked") // Pipeline ensures the proper type will be accepted by put
     public <T> void put(final Class<T> type, final T item) {
         final Set<SinkHandler<?, ?>> handlers = getSinkHandlers(type);
@@ -271,6 +348,17 @@ public class DataPipeline {
         }
     }
 
+    /**
+     * Puts multiple data elements into all accepting {@link com.merakianalytics.datapipelines.sinks.DataSink}s in the
+     * {@link com.merakianalytics.datapipelines.DataPipeline}
+     *
+     * @param <T>
+     *        the type of the data that should be stored
+     * @param type
+     *        the type of the data that should be stored
+     * @param items
+     *        the data to be stored
+     */
     @SuppressWarnings("unchecked") // Pipeline ensures the proper type will be accepted by putMany
     public <T> void putMany(final Class<T> type, final Iterable<T> items) {
         final Set<SinkHandler<?, ?>> handlers = getSinkHandlers(type);

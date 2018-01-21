@@ -22,6 +22,13 @@ import javax.lang.model.util.Types;
 import com.merakianalytics.datapipelines.PipelineContext;
 import com.merakianalytics.datapipelines.iterators.CloseableIterator;
 
+/**
+ * A compile-time Annotation Processor to verify that {@link com.merakianalytics.datapipelines.sources.GetMany} annotations are placed only on methods that have
+ * the proper signature
+ *
+ * @see com.merakianalytics.datapipelines.sources.GetMany
+ * @see com.merakianalytics.datapipelines.sources.AbstractDataSource#getMany(Class, Map, PipelineContext)
+ */
 @SupportedAnnotationTypes("com.merakianalytics.datapipelines.sources.GetMany")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class GetManyProcessor extends AbstractProcessor {

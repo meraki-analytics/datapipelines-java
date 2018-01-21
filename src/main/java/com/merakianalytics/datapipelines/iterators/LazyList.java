@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
+/**
+ * A {@link java.util.List} which lazily pulls its elements from a {@link com.merakianalytics.datapipelines.iterators.CloseableIterator} as they are needed
+ *
+ * @see com.merakianalytics.datapipelines.iterators.CloseableIterator
+ */
 public class LazyList<T> implements List<T>, AutoCloseable {
     private class LazyListIterator implements ListIterator<T> {
         private int index;
@@ -110,16 +115,32 @@ public class LazyList<T> implements List<T>, AutoCloseable {
     private final List<T> data;
     private final CloseableIterator<T> dataSource;
 
+    /**
+     * @param dataSource
+     *        the {@link com.merakianalytics.datapipelines.iterators.CloseableIterator} to lazily load data from
+     */
     public LazyList(final CloseableIterator<T> dataSource) {
         data = new ArrayList<>();
         this.dataSource = dataSource;
     }
 
+    /**
+     * @param dataSource
+     *        {@link com.merakianalytics.datapipelines.iterators.CloseableIterator}
+     * @param initialCapacity
+     *        the expected number of elements that will be provided by the {@link com.merakianalytics.datapipelines.iterators.CloseableIterator}.
+     */
     public LazyList(final CloseableIterator<T> dataSource, final int initialCapacity) {
         data = new ArrayList<>(initialCapacity);
         this.dataSource = dataSource;
     }
 
+    /**
+     * @param items
+     *        the data to seed the list with before lazily loading data from the provided {@link com.merakianalytics.datapipelines.iterators.CloseableIterator}
+     * @param dataSource
+     *        the {@link com.merakianalytics.datapipelines.iterators.CloseableIterator} to lazily load data from
+     */
     public LazyList(final Collection<? extends T> items, final CloseableIterator<T> dataSource) {
         data = new ArrayList<>(items);
         this.dataSource = dataSource;

@@ -8,11 +8,20 @@ import java.util.Set;
 
 import com.merakianalytics.datapipelines.PipelineContext;
 
+/**
+ * A {@link com.merakianalytics.datapipelines.transformers.DataTransformer} which delegates to other
+ * {@link com.merakianalytics.datapipelines.transformers.DataTransformer}s to fulfill
+ * {@link com.merakianalytics.datapipelines.transformers.AbstractDataTransformer#transform(Class, Class, Object, PipelineContext)} requests
+ */
 public class CompositeDataTransformer implements DataTransformer {
     private final int cost;
     private final Map<Class<?>, Map<Class<?>, DataTransformer>> transformers;
     private final Map<Class<?>, Set<Class<?>>> transforms;
 
+    /**
+     * @param transformers
+     *        the {@link com.merakianalytics.datapipelines.transformers.DataTransformer}s to delegate to
+     */
     public CompositeDataTransformer(final Collection<DataTransformer> transformers) {
         int maxCost = Integer.MIN_VALUE;
 

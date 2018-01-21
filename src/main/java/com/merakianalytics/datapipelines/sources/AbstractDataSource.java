@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,8 +14,22 @@ import org.slf4j.LoggerFactory;
 import com.merakianalytics.datapipelines.NotSupportedException;
 import com.merakianalytics.datapipelines.PipelineContext;
 import com.merakianalytics.datapipelines.iterators.CloseableIterator;
-import com.merakianalytics.datapipelines.iterators.CloseableIterators;
 
+/**
+ * A base class for easily defining new {@link com.merakianalytics.datapipelines.sources.DataSource}s using just the
+ * {@link com.merakianalytics.datapipelines.sources.Get} and {@link com.merakianalytics.datapipelines.sources.GetMany} annotations.
+ *
+ * Methods annotated with these annotations in subclasses will be automatically picked up as delegate methods for
+ * {@link com.merakianalytics.datapipelines.sources.AbstractDataSource#get(Class, Map, PipelineContext)} and
+ * {@link com.merakianalytics.datapipelines.sources.AbstractDataSource#getMany(Class, Map, PipelineContext)}.
+ *
+ * The {@link com.merakianalytics.datapipelines.sources.AbstractDataSource#provides()} functionality will be automatically determined from the annotations as
+ * well,
+ * with {@link com.merakianalytics.datapipelines.sources.AbstractDataSource#ignore()} allowing subclasses to alter this at runtime.
+ *
+ * @see com.merakianalytics.datapipelines.sources.Get
+ * @see com.merakianalytics.datapipelines.sources.GetMany
+ */
 public abstract class AbstractDataSource implements DataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataSource.class);
     private Map<Class<?>, Method> getManyMethods;
@@ -69,16 +82,6 @@ public abstract class AbstractDataSource implements DataSource {
         }
     }
 
-    @Override
-    public <T> List<T> getManyAsList(final Class<T> type, final Map<String, Object> query, final PipelineContext context) {
-        return CloseableIterators.toList(getMany(type, query, context));
-    }
-
-    @Override
-    public <T> Set<T> getManyAsSet(final Class<T> type, final Map<String, Object> query, final PipelineContext context) {
-        return CloseableIterators.toSet(getMany(type, query, context));
-    }
-
     private Map<Class<?>, Method> getManyMethods() {
         if(getManyMethods == null) {
             initialize();
@@ -95,6 +98,11 @@ public abstract class AbstractDataSource implements DataSource {
         return getMethods;
     }
 
+    /**
+     * @return any classes which may exist in {@link com.merakianalytics.datapipelines.sources.Get} and
+     *         {@link com.merakianalytics.datapipelines.sources.GetMany} annotations but should be ignored by this
+     *         {@link com.merakianalytics.datapipelines.sources.AbstractDataSource} instance
+     */
     protected Set<Class<?>> ignore() {
         return Collections.emptySet();
     }

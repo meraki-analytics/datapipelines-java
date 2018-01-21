@@ -13,6 +13,20 @@ import org.slf4j.LoggerFactory;
 
 import com.merakianalytics.datapipelines.PipelineContext;
 
+/**
+ * A base class for easily defining new {@link com.merakianalytics.datapipelines.sinks.DataSink}s using just the
+ * {@link com.merakianalytics.datapipelines.sinks.Put} and {@link com.merakianalytics.datapipelines.sinks.PutMany} annotations.
+ *
+ * Methods annotated with these annotations in subclasses will be automatically picked up as delegate methods for
+ * {@link com.merakianalytics.datapipelines.sinks.AbstractDataSink#put(Class, Object, PipelineContext)} and
+ * {@link com.merakianalytics.datapipelines.sinks.AbstractDataSink#putMany(Class, Iterable, PipelineContext)}.
+ *
+ * The {@link com.merakianalytics.datapipelines.sinks.AbstractDataSink#accepts()} functionality will be automatically determined from the annotations as well,
+ * with {@link com.merakianalytics.datapipelines.sinks.AbstractDataSink#ignore()} allowing subclasses to alter this at runtime.
+ *
+ * @see com.merakianalytics.datapipelines.sinks.Put
+ * @see com.merakianalytics.datapipelines.sinks.PutMany
+ */
 public abstract class AbstractDataSink implements DataSink {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataSink.class);
     private final Object initLock = new Object();
@@ -27,6 +41,10 @@ public abstract class AbstractDataSink implements DataSink {
         return Collections.unmodifiableSet(provides);
     }
 
+    /**
+     * @return any classes which may exist in {@link com.merakianalytics.datapipelines.sinks.Put} and {@link com.merakianalytics.datapipelines.sinks.PutMany}
+     *         annotations but should be ignored by this {@link com.merakianalytics.datapipelines.sinks.AbstractDataSink} instance
+     */
     protected Set<Class<?>> ignore() {
         return Collections.emptySet();
     }

@@ -2,6 +2,10 @@ package com.merakianalytics.datapipelines;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * A container for contextual information about an active {@link com.merakianalytics.datapipelines.DataPipeline} request.
+ * It allows information like remaining cache durations to be passed among {@link com.merakianalytics.datapipelines.PipelineElement}s
+ */
 public class PipelineContext extends ConcurrentHashMap<String, Object> {
     private static final long serialVersionUID = -4510900737770535444L;
     private DataPipeline pipeline;

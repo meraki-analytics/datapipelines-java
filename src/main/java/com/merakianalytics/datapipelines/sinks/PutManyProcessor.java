@@ -21,6 +21,13 @@ import javax.lang.model.util.Types;
 
 import com.merakianalytics.datapipelines.PipelineContext;
 
+/**
+ * A compile-time Annotation Processor to verify that {@link com.merakianalytics.datapipelines.sinks.PutMany} annotations are placed only on methods that have
+ * the proper signature
+ *
+ * @see com.merakianalytics.datapipelines.sinks.PutMany
+ * @see com.merakianalytics.datapipelines.sinks.AbstractDataSink#putMany(Class, Iterable, PipelineContext)
+ */
 @SupportedAnnotationTypes("com.merakianalytics.datapipelines.sinks.PutMany")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class PutManyProcessor extends AbstractProcessor {

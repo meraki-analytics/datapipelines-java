@@ -19,6 +19,13 @@ import javax.lang.model.util.Types;
 
 import com.merakianalytics.datapipelines.PipelineContext;
 
+/**
+ * A compile-time Annotation Processor to verify that {@link com.merakianalytics.datapipelines.transformers.Transform} annotations are placed only on methods
+ * that have the proper signature
+ *
+ * @see com.merakianalytics.datapipelines.transformers.Transform
+ * @see com.merakianalytics.datapipelines.transformers.AbstractDataTransformer#transform(Class, Class, Object, PipelineContext)
+ */
 @SupportedAnnotationTypes("com.merakianalytics.datapipelines.transformers.Transform")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class TransformProcessor extends AbstractProcessor {

@@ -9,12 +9,22 @@ import java.util.Map;
 import java.util.Set;
 
 import com.merakianalytics.datapipelines.iterators.CloseableIterator;
-import com.merakianalytics.datapipelines.iterators.CloseableIterators;
 
+/**
+ * A {@link com.merakianalytics.datapipelines.DataStore} which delegates to other {@link com.merakianalytics.datapipelines.DataStore}s to
+ * fulfill {@link com.merakianalytics.datapipelines.AbstractDataStore#get(Class, Map, PipelineContext)},
+ * {@link com.merakianalytics.datapipelines.AbstractDataStore#getMany(Class, Map, PipelineContext)},
+ * {@link com.merakianalytics.datapipelines.AbstractDataStore#put(Class, Object, PipelineContext)}, and
+ * {@link com.merakianalytics.datapipelines.AbstractDataStore#putMany(Class, Iterable, PipelineContext)} requests
+ */
 public class CompositeDataStore implements DataStore {
     private final Map<Class<?>, List<DataStore>> getStores;
     private final Map<Class<?>, List<DataStore>> putStores;
 
+    /**
+     * @param stores
+     *        the {@link com.merakianalytics.datapipelines.DataStore}s to delegate to
+     */
     public CompositeDataStore(final Collection<DataStore> stores) {
         final Map<Class<?>, List<DataStore>> getMapping = new HashMap<>();
         final Map<Class<?>, List<DataStore>> putMapping = new HashMap<>();
@@ -91,16 +101,6 @@ public class CompositeDataStore implements DataStore {
         }
 
         return null;
-    }
-
-    @Override
-    public <T> List<T> getManyAsList(final Class<T> type, final Map<String, Object> query, final PipelineContext context) {
-        return CloseableIterators.toList(getMany(type, query, context));
-    }
-
-    @Override
-    public <T> Set<T> getManyAsSet(final Class<T> type, final Map<String, Object> query, final PipelineContext context) {
-        return CloseableIterators.toSet(getMany(type, query, context));
     }
 
     @Override

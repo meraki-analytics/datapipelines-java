@@ -12,12 +12,22 @@ import org.slf4j.LoggerFactory;
 
 import com.merakianalytics.datapipelines.PipelineContext;
 
+/**
+ * A base class for easily defining new {@link com.merakianalytics.datapipelines.transformers.DataTransformer}s using just the
+ * {@link com.merakianalytics.datapipelines.transformers.Transform} annotations.
+ *
+ * Methods annotated with these annotations in subclasses will be automatically picked up as delegate methods for
+ * {@link com.merakianalytics.datapipelines.transformers.AbstractDataTransformer#transform(Class, Class, Object, PipelineContext)}.
+ *
+ * The {@link com.merakianalytics.datapipelines.transformers.AbstractDataTransformer#transforms()} functionality will be automatically determined from the
+ * annotations as well.
+ *
+ * @see com.merakianalytics.datapipelines.transformers.Transform
+ */
 public class AbstractDataTransformer implements DataTransformer {
     private static final int DEFAULT_COST = 1;
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataTransformer.class);
-
     private final Object initLock = new Object();
-
     private Map<Class<?>, Map<Class<?>, Method>> transformMethods;
 
     @Override

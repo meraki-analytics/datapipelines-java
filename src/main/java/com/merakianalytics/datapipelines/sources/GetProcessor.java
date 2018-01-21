@@ -21,6 +21,13 @@ import javax.lang.model.util.Types;
 
 import com.merakianalytics.datapipelines.PipelineContext;
 
+/**
+ * A compile-time Annotation Processor to verify that {@link com.merakianalytics.datapipelines.sources.Get} annotations are placed only on methods that have
+ * the proper signature
+ *
+ * @see com.merakianalytics.datapipelines.sources.Get
+ * @see com.merakianalytics.datapipelines.sources.AbstractDataSource#get(Class, Map, PipelineContext)
+ */
 @SupportedAnnotationTypes("com.merakianalytics.datapipelines.sources.Get")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class GetProcessor extends AbstractProcessor {

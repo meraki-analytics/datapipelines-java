@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,12 +12,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.merakianalytics.datapipelines.iterators.CloseableIterator;
-import com.merakianalytics.datapipelines.iterators.CloseableIterators;
 import com.merakianalytics.datapipelines.sinks.Put;
 import com.merakianalytics.datapipelines.sinks.PutMany;
 import com.merakianalytics.datapipelines.sources.Get;
 import com.merakianalytics.datapipelines.sources.GetMany;
 
+/**
+ * A base class for easily defining new {@link com.merakianalytics.datapipelines.DataStore}s using just the
+ * {@link com.merakianalytics.datapipelines.sources.Get}, {@link com.merakianalytics.datapipelines.sources.GetMany},
+ * {@link com.merakianalytics.datapipelines.sinks.Put}, and {@link com.merakianalytics.datapipelines.sinks.PutMany} annotations.
+ *
+ * Methods annotated with these annotations in subclasses will be automatically picked up as delegate methods for
+ * {@link com.merakianalytics.datapipelines.AbstractDataStore#get(Class, Map, PipelineContext)},
+ * {@link com.merakianalytics.datapipelines.AbstractDataStore#getMany(Class, Map, PipelineContext)},
+ * {@link com.merakianalytics.datapipelines.AbstractDataStore#put(Class, Object, PipelineContext)}, and
+ * {@link com.merakianalytics.datapipelines.AbstractDataStore#putMany(Class, Iterable, PipelineContext)}.
+ *
+ * The {@link com.merakianalytics.datapipelines.AbstractDataStore#provides()} and {@link com.merakianalytics.datapipelines.AbstractDataStore#accepts()}
+ * functionality will be automatically determined from the annotations as well, with {@link com.merakianalytics.datapipelines.AbstractDataStore#ignore()}
+ * allowing subclasses to alter this at runtime.
+ *
+ * @see com.merakianalytics.datapipelines.sources.Get
+ * @see com.merakianalytics.datapipelines.sources.GetMany
+ * @see com.merakianalytics.datapipelines.sinks.Put
+ * @see com.merakianalytics.datapipelines.sinks.PutMany
+ */
 public abstract class AbstractDataStore implements DataStore {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataStore.class);
     private Map<Class<?>, Method> getManyMethods;
@@ -81,16 +99,6 @@ public abstract class AbstractDataStore implements DataStore {
         }
     }
 
-    @Override
-    public <T> List<T> getManyAsList(final Class<T> type, final Map<String, Object> query, final PipelineContext context) {
-        return CloseableIterators.toList(getMany(type, query, context));
-    }
-
-    @Override
-    public <T> Set<T> getManyAsSet(final Class<T> type, final Map<String, Object> query, final PipelineContext context) {
-        return CloseableIterators.toSet(getMany(type, query, context));
-    }
-
     private Map<Class<?>, Method> getManyMethods() {
         synchronized(initLock) {
             if(getManyMethods == null) {
@@ -109,6 +117,11 @@ public abstract class AbstractDataStore implements DataStore {
         return getMethods;
     }
 
+    /**
+     * @return any classes which may exist in {@link com.merakianalytics.datapipelines.sources.Get}, {@link com.merakianalytics.datapipelines.sources.GetMany},
+     *         {@link com.merakianalytics.datapipelines.sinks.Put}, and {@link com.merakianalytics.datapipelines.sinks.PutMany} annotations but should be
+     *         ignored by this {@link com.merakianalytics.datapipelines.AbstractDataStore} instance
+     */
     protected Set<Class<?>> ignore() {
         return Collections.emptySet();
     }

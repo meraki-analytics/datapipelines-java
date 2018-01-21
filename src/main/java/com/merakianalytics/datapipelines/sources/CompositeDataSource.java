@@ -10,11 +10,20 @@ import java.util.Set;
 
 import com.merakianalytics.datapipelines.PipelineContext;
 import com.merakianalytics.datapipelines.iterators.CloseableIterator;
-import com.merakianalytics.datapipelines.iterators.CloseableIterators;
 
+/**
+ * A {@link com.merakianalytics.datapipelines.sources.DataSource} which delegates to other {@link com.merakianalytics.datapipelines.sources.DataSource}s to
+ * fulfill
+ * {@link com.merakianalytics.datapipelines.sources.AbstractDataSource#get(Class, Map, PipelineContext)} and
+ * {@link com.merakianalytics.datapipelines.sources.AbstractDataSource#getMany(Class, Map, PipelineContext)} requests
+ */
 public class CompositeDataSource implements DataSource {
     private final Map<Class<?>, List<DataSource>> sources;
 
+    /**
+     * @param sources
+     *        the {@link com.merakianalytics.datapipelines.sources.DataSource}s to delegate to
+     */
     public CompositeDataSource(final Collection<? extends DataSource> sources) {
         final Map<Class<?>, List<DataSource>> sourceMapping = new HashMap<>();
         for(final DataSource source : sources) {
@@ -70,16 +79,6 @@ public class CompositeDataSource implements DataSource {
         }
 
         return null;
-    }
-
-    @Override
-    public <T> List<T> getManyAsList(final Class<T> type, final Map<String, Object> query, final PipelineContext context) {
-        return CloseableIterators.toList(getMany(type, query, context));
-    }
-
-    @Override
-    public <T> Set<T> getManyAsSet(final Class<T> type, final Map<String, Object> query, final PipelineContext context) {
-        return CloseableIterators.toSet(getMany(type, query, context));
     }
 
     @Override

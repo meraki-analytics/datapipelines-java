@@ -10,9 +10,18 @@ import java.util.Set;
 
 import com.merakianalytics.datapipelines.PipelineContext;
 
+/**
+ * A {@link com.merakianalytics.datapipelines.sinks.DataSink} which delegates to other {@link com.merakianalytics.datapipelines.sinks.DataSink}s to fulfill
+ * {@link com.merakianalytics.datapipelines.sinks.AbstractDataSink#put(Class, Object, PipelineContext)} and
+ * {@link com.merakianalytics.datapipelines.sinks.AbstractDataSink#putMany(Class, Iterable, PipelineContext)} requests
+ */
 public class CompositeDataSink implements DataSink {
     private final Map<Class<?>, List<DataSink>> sinks;
 
+    /**
+     * @param sinks
+     *        the {@link com.merakianalytics.datapipelines.sinks.DataSink}s to delegate to
+     */
     public CompositeDataSink(final Collection<DataSink> sinks) {
         final Map<Class<?>, List<DataSink>> sinkMapping = new HashMap<>();
         for(final DataSink sink : sinks) {
