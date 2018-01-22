@@ -5,7 +5,7 @@
 
 	<groupId>com.merakianalytics.datapipelines</groupId>
 	<artifactId>datapipelines</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 
 	<name>datapipelines</name>
 	<description>Caching abstraction layer for orchestrating multiple cache tiers</description>
