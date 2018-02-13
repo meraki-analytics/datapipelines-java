@@ -1,6 +1,7 @@
 package com.merakianalytics.datapipelines;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +40,7 @@ import com.merakianalytics.datapipelines.transformers.DataTransformer;
  * @see com.merakianalytics.datapipelines.transformers.DataTransformer
  */
 public class DataPipeline {
+    private final List<PipelineElement> elements;
     private final Map<Class<?>, Object> sinkHandlerLocks;
     private final Map<Class<?>, Set<SinkHandler<?, ?>>> sinkHandlers;
     private final Set<DataSink> sinks;
@@ -46,6 +48,7 @@ public class DataPipeline {
     private final Map<Class<?>, List<SourceHandler<?, ?>>> sourceHandlers;
     private final List<DataSource> sources;
     private final Map<DataSource, Set<DataSink>> sourceTargets;
+    private final Set<DataTransformer> transformers;
     private final TypeGraph typeGraph;
 
     /**
@@ -56,6 +59,9 @@ public class DataPipeline {
      *        {@link com.merakianalytics.datapipelines.DataStore}s to use in the {@link com.merakianalytics.datapipelines.DataPipeline}
      */
     public DataPipeline(final Collection<? extends DataTransformer> transformers, final List<? extends PipelineElement> elements) {
+        this.elements = Collections.unmodifiableList(new ArrayList<>(elements));
+        this.transformers = Collections.unmodifiableSet(new HashSet<>(transformers));
+
         typeGraph = new TypeGraph(transformers);
 
         final Map<DataSource, Set<DataSink>> targets = new HashMap<>();
@@ -217,6 +223,13 @@ public class DataPipeline {
     }
 
     /**
+     * @return the {@link com.merakianalytics.datapipelines.PipelineElement}s that compose the {@link com.merakianalytics.datapipelines.DataPipeline}
+     */
+    public List<PipelineElement> getElements() {
+        return elements;
+    }
+
+    /**
      * Gets multiple data elements from the {@link com.merakianalytics.datapipelines.DataPipeline}
      *
      * @param <T>
@@ -315,6 +328,13 @@ public class DataPipeline {
         }
 
         return handlers;
+    }
+
+    /**
+     * @return the {@link com.merakianalytics.datapipelines.transformers.DataTransformer}s that can be used by the pipeline
+     */
+    public Set<DataTransformer> getTransformers() {
+        return transformers;
     }
 
     private PipelineContext newContext() {
