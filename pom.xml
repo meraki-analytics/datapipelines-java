@@ -4,7 +4,7 @@
 
 	<groupId>com.merakianalytics.datapipelines</groupId>
 	<artifactId>datapipelines</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.3</version>
 
 	<name>datapipelines</name>
 	<description>Caching abstraction layer for orchestrating multiple cache tiers</description>
@@ -116,7 +116,6 @@
 	<profiles>
 		<profile>
 			<id>release</id>
-
 			<distributionManagement>
 				<snapshotRepository>
 					<id>ossrh</id>
@@ -127,7 +126,6 @@
 					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 				</repository>
 			</distributionManagement>
-
 			<build>
 				<plugins>
 					<plugin>
